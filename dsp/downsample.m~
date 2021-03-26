@@ -1,0 +1,7 @@
+function x=downsample(x,D)
+   N=length(x);
+   if N/D ~= round(N/D), error('length(x)/D not an integer'), end
+   X=fft(x(:));
+   X=[X(1:N/D/2+1);X(end-N/D/2+2:end)];
+   x=real(ifft(X));
+end

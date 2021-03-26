@@ -1,0 +1,3 @@
+function z=circconv(x,y)
+   z = real(ifft(fft(y(:)).*fft(x(:))));
+end

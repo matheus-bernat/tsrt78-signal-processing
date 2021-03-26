@@ -1,0 +1,13 @@
+function [R,k]=lss2covfun(m,kmax)
+%State space model to covariance function conversion
+if ~islss(m), error('m must be a state space model'), end
+k=0:kmax;
+R=zeros(size(k));
+Pibar=dlyap(m.A,m.Q);
+R(1)=m.C*Pibar*m.C'+m.R; 
+tmp=m.C*Pibar;
+if isfield(m.S), S=m.S; else S=zeros(size(A,1),size(C,1)); end
+for l=1:kmax
+   R(l+1)=tmp*m.C'+tmp*S;
+   tmp=tmp*Pibar;
+end

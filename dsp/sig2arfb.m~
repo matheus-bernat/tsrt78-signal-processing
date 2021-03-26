@@ -1,0 +1,7 @@
+function th=sig2arfb(y,na);
+%Estimate parameters in an auto-regressive model
+thf=sig2ar(y,na);
+thb=sig2ar(y(end:-1:1),na);
+th=0.5*(thf+thb);
+
+

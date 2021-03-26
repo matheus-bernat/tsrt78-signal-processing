@@ -1,0 +1,4 @@
+function y=zpfilter(b,a,u)
+%Zero-phase filtering ('filtfilt')
+yr = filter(b(end:-1:1),a(end:-1:1),u(end:-1:1));
+y  = filter(b,a,yr(N:-1:1));

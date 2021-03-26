@@ -1,0 +1,27 @@
+function [th,P,lam,epsi,thk]=sig2arx(y,na,nc,th,iter,mu);
+%Estimate parameters in an ARMA model
+if nargin<6, mu=0.1; end
+if nargin<5, iter=50; end
+if nargin<4, th=zeros(na+nc,1); end
+n=max([na nc]);
+N=length(y);
+for k=1:iter
+   a=[1;th(1:na)]; 
+   c=[1;th(na+1:na+nc)];
+   epsi=filter(a,c,y);
+   psia=filter([1 0 0],c,y);
+   psic=filter(-1,c,epsi);
+   PhiT=[ -toeplitz(psia(n:end-1),psia(n:-1:n-na+1)),...
+	  -toeplitz(psic(n:end-1),psic(n:-1:n-nc+1)) ];
+      th=th+mu*((1e-10*eye(na+nc)+PhiT'*PhiT)\(PhiT'*epsi(n+1:end)));
+   thk(:,k)=th;
+end
+a=[1;th(1:na)]; c=[1;th(na+1:na+nc)];
+epsi=filter(a,c,y);
+lam=epsi'*epsi/length(epsi);
+P=lam*inv(PhiT'*PhiT);
+if nargout==0
+    disp(['[a,c] = ',num2str([th'])])
+    disp([' std  = ',num2str(diag(P)')])
+    disp([' lam  = ',num2str(lam)])
+end

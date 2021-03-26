@@ -1,0 +1,23 @@
+function th=sig2arma22(y,na,nc,th,iter)
+%Estimate parameters in an ARMA model
+n  = max([na nc]);
+mu = 0.1;
+N  = length(y);
+for k = 1:iter
+  a = [1;th(1:na)];
+  c = [1;th(na+1:na+nc)];
+  epsi = filter(a,c,y)';
+  psia = -filter(1,c,y)';
+  psic = filter(1,c,epsi);
+  psi  = [[0 psia(1:N-1)];
+          [0 0 psia(1:N-2)];
+          [0 psic(1:N-1)];
+          [0 0 psic(1:N-2)]];
+  Vprime = (-2/(N-2))*sum(repmat(epsi(3:end),4,1).*psi(:,3:end),2);
+  Rtmp = zeros(4,4);
+  for t=3:N
+    Rtmp = Rtmp + psi(:,t)*psi(:,t)';
+  end;
+  R = (1/(N-2))*Rtmp;
+  th = th-mu*(R\Vprime);
+end

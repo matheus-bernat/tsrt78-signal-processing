@@ -1,0 +1,11 @@
+function [num,den]=spec2arma(c,a,lambda)
+%ARMA to spectrum conversion
+%Ex: [num,den]=arma2spec([1 -0.8],[1 -0.9],1)
+m=length(c);
+d=conv(c,c(end:-1:1));
+num=[d(m) 2*d(m+1:2*m-1)];
+n=length(a);
+d=conv(a,a(end:-1:1));
+den=[d(n) 2*d(n+1:2*n-1)];
+
+

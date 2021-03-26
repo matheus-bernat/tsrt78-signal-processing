@@ -1,0 +1,496 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>homework_4</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-12-15"><meta name="DC.source" content="homework_4.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">============================== Question 1 ==============================</a></li><li><a href="#3">----------- Non-parametric method: Spectrogram</a></li><li><a href="#4">----------- Parametric method: AR-model and adaptive filter (page 347)</a></li><li><a href="#5">Calculate model parameters theta and errors</a></li><li><a href="#6">Calculate angles of roots of the transfer functions by LMS, RLS &amp; KF</a></li><li><a href="#7">Plot estimated frequencies against spectrogram</a></li><li><a href="#8">Plot estimated time against estimated frequencies</a></li><li><a href="#9">Help functions</a></li></ul></div><pre class="codeinput"><span class="comment">% Homework 4 - Adaptive filtering</span>
+<span class="comment">% Matheus Bernat (matvi959)</span>
+
+addpath <span class="string">../CourseLib</span>
+addpath <span class="string">../dsp</span>
+</pre><h2 id="2">============================== Question 1 ==============================</h2><p>Methods to estimate and track the frequencies of a signal</p><pre class="codeinput">signal = load(<span class="string">'y.mat'</span>);
+y = signal.y;
+N = length(y);
+fs = 100; <span class="comment">% [Hz]</span>
+T = 1/fs; <span class="comment">% [s]</span>
+timeVec = (0:N-1)*T;
+freqHz = (0:N-1)*fs/N;
+<span class="comment">%sound(y)</span>
+
+figure(1);
+subplot(2,1,1); plot(timeVec, y); xlabel(<span class="string">'Time [s]'</span>);
+Y = fft(y);
+subplot(2,1,2); plot(freqHz,Y); xlabel(<span class="string">'Frequency [Hz]'</span>);
+</pre><img vspace="5" hspace="5" src="homework_4_01.png" alt=""> <h2 id="3">----------- Non-parametric method: Spectrogram</h2><pre class="codeinput">figure(2);
+spectrogram(y, kaiser(128,18),120,128,fs,<span class="string">'yaxis'</span>);
+title(<span class="string">'Spectrogram for chirp'</span>);
+</pre><img vspace="5" hspace="5" src="homework_4_02.png" alt=""> <h2 id="4">----------- Parametric method: AR-model and adaptive filter (page 347)</h2><p>Adaptive filters can be used to analyze the frequency content of a signal as a function of time.</p><pre class="codeinput"><span class="comment">% Select best model order</span>
+figure(44);
+arorder(y,70);
+legend(<span class="string">'Minimal loss function'</span>,<span class="string">'Akaikes information criterion (AIC)'</span>,<span class="keyword">...</span>
+    <span class="string">'Akikes information criterion B (BIC)'</span>);
+xlabel(<span class="string">'AR-model order'</span>);
+maxOrder = 100;
+
+bestOrder = 2;
+
+<span class="comment">% According to the AIC/BIC values in the plot above, model orders of 2, 4,</span>
+<span class="comment">% 6 and 8 are interesting given that big drops in the values of AIC/BIC</span>
+<span class="comment">% happens then. Model order 2 is chosen to continue the exercise, since a</span>
+<span class="comment">% chirp signal is made of a sine with increasing frequency, and sines</span>
+<span class="comment">% z-transform contains only 2 poles.</span>
+</pre><img vspace="5" hspace="5" src="homework_4_03.png" alt=""> <h2 id="5">Calculate model parameters theta and errors</h2><pre class="codeinput">clc;
+<span class="comment">% ---------------- LMS, page 336</span>
+mu = 0.15;                                         <span class="comment">% step-length</span>
+[th_lms, err_lms] = my_arlms(y, bestOrder, mu);    <span class="comment">% model parameters and error through time</span>
+
+<span class="comment">% ---------------- RLS, page 340</span>
+lambda = 0.92;                                      <span class="comment">% forgetting-factor</span>
+[th_rls,Pt_rls,err_rls] = arrls(y, bestOrder, lambda);
+
+<span class="comment">% lambda is a design parameter, between 0 and 1. If it equals 1: all errors</span>
+<span class="comment">% in the loss function are considered</span>
+
+<span class="comment">% ---------------- KF</span>
+Q = [0.05 0; 0 0];  <span class="comment">% process noise covariance</span>
+[th_kf,Pt_kf,err_kf] = my_arkf(y, bestOrder, Q);
+
+<span class="comment">% Q is a design parameter, it stands for the covariance of process noise.</span>
+<span class="comment">% It is a 2x2 matrix.</span>
+
+<span class="comment">%---------------- Total tracking errors</span>
+totalErr_lms = sum(err_lms) <span class="comment">% 8.8028</span>
+totalErr_rls = sum(err_rls) <span class="comment">% 11.9827</span>
+totalErr_kf = sum(err_kf)   <span class="comment">% 13.0962</span>
+
+<span class="comment">% QUESTION: Which filter has the smallest tracking error?</span>
+
+<span class="comment">% ANSWER: with the current design parameters, the filter that gives the</span>
+<span class="comment">% smallest tracking error is the model parameters chosen by LMS.</span>
+</pre><h2 id="6">Calculate angles of roots of the transfer functions by LMS, RLS &amp; KF</h2><pre class="codeinput">poleArgs_lms = zeros(N, bestOrder);
+poleArgs_rls = zeros(N, bestOrder);
+poleArgs_kf = zeros(N, bestOrder);
+
+<span class="keyword">for</span> t = 1:N
+    poleArgs_lms(t,:) = angle(roots([1 th_lms(:,t)']));
+    poleArgs_rls(t,:) = angle(roots([1 th_rls(:,t)']));
+    poleArgs_kf(t,:) = angle(roots([1 th_kf(:,t)']));
+<span class="keyword">end</span>
+
+<span class="comment">% By getting the roots of the denominator of H(q) (where y(t)=H(q)*e(t)),</span>
+<span class="comment">% we find where the poles of this transfer function are. Then, we calculate</span>
+<span class="comment">% the angles to each one of these 45 poles, for each time t from 1 to 5000.</span>
+</pre><h2 id="7">Plot estimated frequencies against spectrogram</h2><pre class="codeinput"><span class="comment">% ANSWER: See plot below.</span>
+
+clf;
+
+figure(6);
+spectrogram(y, kaiser(128,18),120,128,fs,<span class="string">'yaxis'</span>);
+colormap <span class="string">gray</span>;
+title(<span class="string">'Spectrogram for chirp &amp; frequency tracking by LMS'</span>);
+hold <span class="string">on</span>;
+plot(timeVec, poleArgs_lms(:,1)*fs/(2*pi),<span class="string">'LineWidth'</span>,1);
+legend(<span class="string">'LMS tracked frequency'</span>);
+
+figure(7);
+spectrogram(y, kaiser(128,18),120,128,fs,<span class="string">'yaxis'</span>);
+colormap <span class="string">gray</span>;
+title(<span class="string">'Spectrogram for chirp &amp; frequency tracking by RLS'</span>);
+hold <span class="string">on</span>;
+plot(timeVec, poleArgs_rls(:,1)*fs/(2*pi), <span class="string">'-r'</span>, <span class="string">'LineWidth'</span>,1);
+legend(<span class="string">'RLS tracked frequency'</span>);
+
+figure(8);
+spectrogram(y, kaiser(128,18),120,128,fs,<span class="string">'yaxis'</span>);
+colormap <span class="string">gray</span>;
+title(<span class="string">'Spectrogram for chirp &amp; frequency tracking by KF'</span>);
+hold <span class="string">on</span>;
+plot(timeVec, poleArgs_kf(:,1)*fs/(2*pi),<span class="string">'-y'</span>, <span class="string">'LineWidth'</span>,1);
+legend(<span class="string">'KF tracked frequency'</span>);
+
+<span class="comment">% All plots in one figure:</span>
+figure(9);clf;
+spectrogram(y, kaiser(128,18),120,128,fs,<span class="string">'yaxis'</span>);
+colormap <span class="string">gray</span>;
+hold <span class="string">on</span>; plot(timeVec, poleArgs_lms(:,1)*fs/(2*pi),<span class="string">'LineWidth'</span>,1);
+hold <span class="string">on</span>; plot(timeVec, poleArgs_rls(:,1)*fs/(2*pi), <span class="string">'LineWidth'</span>,1);
+hold <span class="string">on</span>; plot(timeVec, poleArgs_kf(:,1)*fs/(2*pi), <span class="string">'LineWidth'</span>,1);
+legend(<span class="string">'LMS'</span>,<span class="string">'RLS'</span>,<span class="string">'KF'</span>);
+title(<span class="string">'Spectrogram for chirp &amp; frequency tracking by LMS, RLS &amp; KF'</span>);
+
+<span class="comment">% QUESTION: How can the fact the Kalman filter allows for different</span>
+<span class="comment">% adaption rates of the model parameters be used to improve the performance</span>
+<span class="comment">% of the frequency tracking?</span>
+
+<span class="comment">% ANSWER: The Q matrix (process noise covariance matrix) does not need to</span>
+<span class="comment">% be diagonal. If we set Q = [q 0; 0 0] we'll only permit a1 to adapt while</span>
+<span class="comment">% a2 will converge to a constant value. So one can model the Q-matrix</span>
+<span class="comment">% depending on the wished radius of the poles. Better tracking with the KF</span>
+<span class="comment">% was achieved when setting the Q-matrix this way.</span>
+</pre><img vspace="5" hspace="5" src="homework_4_04.png" alt=""> <img vspace="5" hspace="5" src="homework_4_05.png" alt=""> <img vspace="5" hspace="5" src="homework_4_06.png" alt=""> <img vspace="5" hspace="5" src="homework_4_07.png" alt=""> <img vspace="5" hspace="5" src="homework_4_08.png" alt=""> <h2 id="8">Plot estimated time against estimated frequencies</h2><pre class="codeinput"><span class="comment">% LMS</span>
+figure(3);
+subplot(2,1,1);plot(timeVec,th_lms);
+title(<span class="string">'Parameter tracking LMS'</span>);
+xlabel(<span class="string">'Time [s]'</span>);
+legend(<span class="string">'a_1'</span>,<span class="string">'a_2'</span>);
+
+subplot(2,1,2);plot(timeVec, poleArgs_lms);
+title(<span class="string">'Angles of poles given by LMS'</span>);
+xlabel(<span class="string">'Time [s]'</span>);
+subplot(2,1,2);
+legend(<span class="string">'$\varphi_1$'</span>, <span class="string">'$\varphi_2$'</span>,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+
+<span class="comment">% RLS</span>
+figure(4);
+subplot(2,1,1);plot(timeVec,th_rls);
+title(<span class="string">'Parameter tracking RLS'</span>);
+xlabel(<span class="string">'Time [s]'</span>);
+legend(<span class="string">'a_1'</span>,<span class="string">'a_2'</span>);
+
+subplot(2,1,2);plot(timeVec, poleArgs_rls);
+title(<span class="string">'Angles of poles given by RLS'</span>);
+xlabel(<span class="string">'Time [s]'</span>);
+subplot(2,1,2);
+legend(<span class="string">'$\varphi_1$'</span>, <span class="string">'$\varphi_2$'</span>,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+
+<span class="comment">% LMS</span>
+figure(5);
+subplot(2,1,1);plot(timeVec,th_kf);
+title(<span class="string">'Parameter tracking KF'</span>);
+xlabel(<span class="string">'Time [s]'</span>);
+legend(<span class="string">'a_1'</span>,<span class="string">'a_2'</span>);
+
+subplot(2,1,2);plot(timeVec, poleArgs_kf);
+title(<span class="string">'Angles of poles given by KF'</span>);
+xlabel(<span class="string">'Time [s]'</span>);
+subplot(2,1,2);
+legend(<span class="string">'$\varphi_1$'</span>, <span class="string">'$\varphi_2$'</span>,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+</pre><img vspace="5" hspace="5" src="homework_4_09.png" alt=""> <img vspace="5" hspace="5" src="homework_4_10.png" alt=""> <img vspace="5" hspace="5" src="homework_4_11.png" alt=""> <h2 id="9">Help functions</h2><pre class="codeinput"><span class="keyword">function</span> [th, err] = my_arlms(y,order,mu)
+    N = length(y);
+    th = zeros(order, N); <span class="comment">% model order rows &amp; N columns</span>
+    err = zeros(1,N);
+
+    <span class="comment">% phi(i) for i &lt; order is set to 0. Therefore the for-loop starts</span>
+    <span class="comment">% on order+1. See e.g. solution of exercise 9.6</span>
+    <span class="keyword">for</span> t = (order+1):N
+        phi = -y(t-1:-1:t-order, :); <span class="comment">% See definition of phi in lecture 6</span>
+        th(:,t) = th(:,t-1) + mu*phi*(y(t) - phi'*th(:, t-1)); <span class="comment">% page 337</span>
+        err(:,t) = y(t) - phi'*th(:,t); <span class="comment">% Difference between real value and prediction</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> [tht,Pt,epsi]=my_arkf(y,na,Q)
+<span class="comment">%RLS for adaptive AR parameter estimation</span>
+<span class="keyword">if</span> nargin&lt;3; Q=0.01*eye(na); <span class="keyword">end</span>
+N=length(y);
+th=zeros(na,1);
+P=100*eye(na);
+<span class="keyword">for</span> t=na+1:N
+    phi=-y(t-1:-1:t-na,:);
+    K=P*phi./(1+phi'*P*phi);
+    P=P-K*phi'*P+Q;
+    epsi(:,t)=y(t)-phi'*th;
+    th=th+K*epsi(:,t);
+    tht(:,t)=th; Pt(:,:,t)=P;
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">
+totalErr_lms =
+
+    8.8028
+
+
+totalErr_rls =
+
+   11.9827
+
+
+totalErr_kf =
+
+   13.0962
+
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+% Homework 4 - Adaptive filtering
+% Matheus Bernat (matvi959)
+
+addpath ../CourseLib
+addpath ../dsp
+
+%% ============================== Question 1 ==============================
+% Methods to estimate and track the frequencies of a signal
+
+signal = load('y.mat');
+y = signal.y;
+N = length(y);
+fs = 100; % [Hz]
+T = 1/fs; % [s]
+timeVec = (0:N-1)*T;
+freqHz = (0:N-1)*fs/N;
+%sound(y)
+
+figure(1);
+subplot(2,1,1); plot(timeVec, y); xlabel('Time [s]');
+Y = fft(y);
+subplot(2,1,2); plot(freqHz,Y); xlabel('Frequency [Hz]');
+%% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH- Non-parametric method: Spectrogram
+
+figure(2);
+spectrogram(y, kaiser(128,18),120,128,fs,'yaxis');
+title('Spectrogram for chirp');
+
+%% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH- Parametric method: AR-model and adaptive filter (page 347)
+% Adaptive filters can be used to analyze the frequency content of a signal
+% as a function of time.
+
+% Select best model order
+figure(44);
+arorder(y,70);
+legend('Minimal loss function','Akaikes information criterion (AIC)',...
+    'Akikes information criterion B (BIC)');
+xlabel('AR-model order');
+maxOrder = 100;
+
+bestOrder = 2;
+
+% According to the AIC/BIC values in the plot above, model orders of 2, 4,
+% 6 and 8 are interesting given that big drops in the values of AIC/BIC
+% happens then. Model order 2 is chosen to continue the exercise, since a
+% chirp signal is made of a sine with increasing frequency, and sines
+% z-transform contains only 2 poles.
+
+%% Calculate model parameters theta and errors
+clc;
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH LMS, page 336
+mu = 0.15;                                         % step-length
+[th_lms, err_lms] = my_arlms(y, bestOrder, mu);    % model parameters and error through time
+
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH RLS, page 340
+lambda = 0.92;                                      % forgetting-factor 
+[th_rls,Pt_rls,err_rls] = arrls(y, bestOrder, lambda);
+
+% lambda is a design parameter, between 0 and 1. If it equals 1: all errors
+% in the loss function are considered
+
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH KF 
+Q = [0.05 0; 0 0];  % process noise covariance
+[th_kf,Pt_kf,err_kf] = my_arkf(y, bestOrder, Q); 
+
+% Q is a design parameter, it stands for the covariance of process noise.
+% It is a 2x2 matrix.
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Total tracking errors
+totalErr_lms = sum(err_lms) % 8.8028
+totalErr_rls = sum(err_rls) % 11.9827
+totalErr_kf = sum(err_kf)   % 13.0962
+
+% QUESTION: Which filter has the smallest tracking error?
+
+% ANSWER: with the current design parameters, the filter that gives the
+% smallest tracking error is the model parameters chosen by LMS. 
+
+%% Calculate angles of roots of the transfer functions by LMS, RLS & KF
+
+poleArgs_lms = zeros(N, bestOrder);
+poleArgs_rls = zeros(N, bestOrder);
+poleArgs_kf = zeros(N, bestOrder);
+
+for t = 1:N
+    poleArgs_lms(t,:) = angle(roots([1 th_lms(:,t)']));
+    poleArgs_rls(t,:) = angle(roots([1 th_rls(:,t)']));
+    poleArgs_kf(t,:) = angle(roots([1 th_kf(:,t)']));
+end
+
+% By getting the roots of the denominator of H(q) (where y(t)=H(q)*e(t)),
+% we find where the poles of this transfer function are. Then, we calculate
+% the angles to each one of these 45 poles, for each time t from 1 to 5000.
+
+%% Plot estimated frequencies against spectrogram
+
+% ANSWER: See plot below.
+
+clf;
+
+figure(6);
+spectrogram(y, kaiser(128,18),120,128,fs,'yaxis');
+colormap gray;
+title('Spectrogram for chirp & frequency tracking by LMS');
+hold on;
+plot(timeVec, poleArgs_lms(:,1)*fs/(2*pi),'LineWidth',1);
+legend('LMS tracked frequency');
+
+figure(7);
+spectrogram(y, kaiser(128,18),120,128,fs,'yaxis');
+colormap gray;
+title('Spectrogram for chirp & frequency tracking by RLS');
+hold on;
+plot(timeVec, poleArgs_rls(:,1)*fs/(2*pi), '-r', 'LineWidth',1);
+legend('RLS tracked frequency');
+
+figure(8);
+spectrogram(y, kaiser(128,18),120,128,fs,'yaxis');
+colormap gray;
+title('Spectrogram for chirp & frequency tracking by KF');
+hold on;
+plot(timeVec, poleArgs_kf(:,1)*fs/(2*pi),'-y', 'LineWidth',1);
+legend('KF tracked frequency');
+
+% All plots in one figure:
+figure(9);clf;
+spectrogram(y, kaiser(128,18),120,128,fs,'yaxis');
+colormap gray;
+hold on; plot(timeVec, poleArgs_lms(:,1)*fs/(2*pi),'LineWidth',1);
+hold on; plot(timeVec, poleArgs_rls(:,1)*fs/(2*pi), 'LineWidth',1);
+hold on; plot(timeVec, poleArgs_kf(:,1)*fs/(2*pi), 'LineWidth',1);
+legend('LMS','RLS','KF');
+title('Spectrogram for chirp & frequency tracking by LMS, RLS & KF');
+
+% QUESTION: How can the fact the Kalman filter allows for different 
+% adaption rates of the model parameters be used to improve the performance 
+% of the frequency tracking?   
+
+% ANSWER: The Q matrix (process noise covariance matrix) does not need to
+% be diagonal. If we set Q = [q 0; 0 0] we'll only permit a1 to adapt while
+% a2 will converge to a constant value. So one can model the Q-matrix
+% depending on the wished radius of the poles. Better tracking with the KF 
+% was achieved when setting the Q-matrix this way.
+
+%% Plot estimated time against estimated frequencies
+
+% LMS
+figure(3);
+subplot(2,1,1);plot(timeVec,th_lms);
+title('Parameter tracking LMS');
+xlabel('Time [s]');
+legend('a_1','a_2');
+
+subplot(2,1,2);plot(timeVec, poleArgs_lms);
+title('Angles of poles given by LMS');
+xlabel('Time [s]');
+subplot(2,1,2);
+legend('$\varphi_1$', '$\varphi_2$','Interpreter','latex');
+
+% RLS
+figure(4);
+subplot(2,1,1);plot(timeVec,th_rls);
+title('Parameter tracking RLS');
+xlabel('Time [s]');
+legend('a_1','a_2');
+
+subplot(2,1,2);plot(timeVec, poleArgs_rls);
+title('Angles of poles given by RLS');
+xlabel('Time [s]');
+subplot(2,1,2);
+legend('$\varphi_1$', '$\varphi_2$','Interpreter','latex');
+
+% LMS
+figure(5);
+subplot(2,1,1);plot(timeVec,th_kf);
+title('Parameter tracking KF');
+xlabel('Time [s]');
+legend('a_1','a_2');
+
+subplot(2,1,2);plot(timeVec, poleArgs_kf);
+title('Angles of poles given by KF');
+xlabel('Time [s]');
+subplot(2,1,2);
+legend('$\varphi_1$', '$\varphi_2$','Interpreter','latex');
+
+
+%% Help functions
+
+function [th, err] = my_arlms(y,order,mu)
+    N = length(y);
+    th = zeros(order, N); % model order rows & N columns
+    err = zeros(1,N);
+    
+    % phi(i) for i < order is set to 0. Therefore the for-loop starts
+    % on order+1. See e.g. solution of exercise 9.6
+    for t = (order+1):N
+        phi = -y(t-1:-1:t-order, :); % See definition of phi in lecture 6
+        th(:,t) = th(:,t-1) + mu*phi*(y(t) - phi'*th(:, t-1)); % page 337
+        err(:,t) = y(t) - phi'*th(:,t); % Difference between real value and prediction
+    end
+end
+
+function [tht,Pt,epsi]=my_arkf(y,na,Q)
+%RLS for adaptive AR parameter estimation
+if nargin<3; Q=0.01*eye(na); end
+N=length(y);
+th=zeros(na,1);
+P=100*eye(na);
+for t=na+1:N
+    phi=-y(t-1:-1:t-na,:); 
+    K=P*phi./(1+phi'*P*phi);
+    P=P-K*phi'*P+Q;
+    epsi(:,t)=y(t)-phi'*th;
+    th=th+K*epsi(:,t);
+    tht(:,t)=th; Pt(:,:,t)=P;
+end
+end
+##### SOURCE END #####
+--></body></html>

@@ -1,0 +1,10 @@
+function yk=lsspredict(A,B,C,y,kstep)
+%State space model prediction
+k=0:kmax;
+yk=zeros(size(y)+kstep);
+tmp=C*A^kstep;
+xhat=zeros(size(A,1),1); 
+for l=1:length(y)
+   yk(l+kstep)=tmp*xhat;
+   xhat=(A-B*C)*xhat+B*y(l);
+end

@@ -1,0 +1,303 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>homework_2</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-11-29"><meta name="DC.source" content="homework_2.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">% Homework 2</span>
+
+clear;clf;
+
+<span class="comment">% -------------------- Calculate Rss and Ryy ---------------------</span>
+
+<span class="comment">% Get the auto-covariance function for Rss. It is symmetric so just</span>
+<span class="comment">% calculate from 0 to 5.</span>
+Rss = zeros(1,11);
+Rss(1) = 2.9804; <span class="comment">% Rss_0</span>
+Rss(2) = 1.6863; <span class="comment">% Rss_1</span>
+<span class="keyword">for</span> k = 3:11
+    Rss(k) = 0.7*Rss(k-1);
+<span class="keyword">end</span>
+
+<span class="comment">% Get the auto-covariance function for Ryy.</span>
+Ree_0 = 2;
+Ryy = zeros(1,11);
+Ryy(1) = Rss(1) + Ree_0;
+<span class="keyword">for</span> k = 2:11
+    Ryy(k) = Rss(k);
+<span class="keyword">end</span>
+
+<span class="comment">% Solve the linear equation system to get h(-5)...h(5)</span>
+<span class="comment">% As in page 273</span>
+A = toeplitz(Ryy(1:11),Ryy(1:11));
+b = [Rss(6) Rss(5) Rss(4) Rss(3) Rss(2) Rss(1:6)]';
+h = A\b <span class="comment">% = inv(A)*b</span>
+
+<span class="comment">% ANSWER:</span>
+<span class="comment">% h = 0.0040 0.0084 0.0197 0.0470 0.1123 0.4910 0.1123 0.0470 0.0197 0.0084 0.0040</span>
+
+<span class="comment">% ANSWER: The values of h found will be used to compute H(q). See the</span>
+<span class="comment">% continuation in the solution by hand.</span>
+
+<span class="comment">% ---------------------------- Simulate the signals -----------------------</span>
+
+<span class="comment">% Create real signal</span>
+N = 500;
+n = 0:N-1;
+sigmaNoise = 1;
+f = 0.3;
+s = sin(f*n);                    <span class="comment">% Interesting signal</span>
+y = s + sigmaNoise*randn(1,N);   <span class="comment">% Signal + noise</span>
+
+<span class="comment">% -------- Filter y using the optimal non-causal Wiener filter ------------</span>
+<span class="comment">% Anti-causal part</span>
+<span class="comment">%a_ac = [1 -3.37];</span>
+<span class="comment">%b_ac = [0.5 -3.37];</span>
+<span class="comment">%sHat_ac = filtfilt(b_ac, a_ac, y);</span>
+
+<span class="comment">% Causal part</span>
+a_c = [1 -0.3];
+b_c = [0.5 0];
+sHat_c = filtfilt(b_c, a_c, y);
+
+sHat = sHat_c;
+
+MSE_1 = sum((s - sHat).^2)/length(s) <span class="comment">% MSE_1 = 0.2621</span>
+
+<span class="comment">% ANSWER: MSE for non-causal filter = 0.2621</span>
+
+<span class="comment">% Plot</span>
+figure(1);
+plot(n, s); hold <span class="string">on</span>; plot(n, sHat);
+legend(<span class="string">'s[n]'</span>,<span class="string">'$\hat{s}_1$[n]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+xlabel(<span class="string">'n'</span>);ylabel(<span class="string">'Real signal and estimate'</span>);
+title(<span class="string">"Non-causal Wiener filter"</span>);
+
+<span class="comment">% ----------------- Filter y using the h(-5),...,h(5) ---------------------</span>
+
+a = 1;
+a = h(6:11);
+<span class="comment">% Just send the causal part to filtfilt</span>
+sHat_2 = filtfilt(b,a,y);
+figure(2);
+plot(n, s); hold <span class="string">on</span>; plot(n, sHat_2);
+legend(<span class="string">'s[n]'</span>,<span class="string">'$\hat{s}_2$[n]'</span>,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+xlabel(<span class="string">'n'</span>);ylabel(<span class="string">'Real signal and estimate'</span>);
+title(<span class="string">"Second non-causal filter with 11 terms of h(q)"</span>);
+
+MSE_2 = sum((s - sHat_2).^2)/length(s) <span class="comment">% 3.65e4</span>
+
+<span class="comment">% ANSWER: MSE for second filter = 3.65e4, not reasonable</span>
+
+
+<span class="comment">% ---------------- Plot Rss ---------------</span>
+
+Rss = zeros(1,length(y));
+Rss(1) = 2.9804; <span class="comment">% Rss_0</span>
+Rss(2) = 1.6863; <span class="comment">% Rss_1</span>
+<span class="keyword">for</span> k = 3:length(y)
+    Rss(k) = 0.7*Rss(k-1);
+<span class="keyword">end</span>
+figure(3);
+plot(n,Rss);
+xlabel(<span class="string">"n"</span>);ylabel(<span class="string">"Rss"</span>);title(<span class="string">"RSS"</span>);
+
+<span class="comment">% ANSWER: I didn't have the time to plot the second filter so I can't</span>
+<span class="comment">% really explain why their performances are alike.</span>
+</pre><pre class="codeoutput">
+h =
+
+    0.0040
+    0.0084
+    0.0197
+    0.0470
+    0.1123
+    0.4910
+    0.1123
+    0.0470
+    0.0197
+    0.0084
+    0.0040
+
+
+MSE_1 =
+
+    0.2515
+
+
+MSE_2 =
+
+   3.1818e+04
+
+</pre><img vspace="5" hspace="5" src="homework_2_01.png" alt=""> <img vspace="5" hspace="5" src="homework_2_02.png" alt=""> <img vspace="5" hspace="5" src="homework_2_03.png" alt=""> <img vspace="5" hspace="5" src="homework_2_04.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+% Homework 2
+
+clear;clf;
+
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Calculate Rss and Ryy REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+
+% Get the auto-covariance function for Rss. It is symmetric so just
+% calculate from 0 to 5.
+Rss = zeros(1,11);
+Rss(1) = 2.9804; % Rss_0
+Rss(2) = 1.6863; % Rss_1
+for k = 3:11
+    Rss(k) = 0.7*Rss(k-1);
+end
+
+% Get the auto-covariance function for Ryy.
+Ree_0 = 2;
+Ryy = zeros(1,11);
+Ryy(1) = Rss(1) + Ree_0;
+for k = 2:11
+    Ryy(k) = Rss(k);
+end
+
+% Solve the linear equation system to get h(-5)...h(5)
+% As in page 273
+A = toeplitz(Ryy(1:11),Ryy(1:11));
+b = [Rss(6) Rss(5) Rss(4) Rss(3) Rss(2) Rss(1:6)]';
+h = A\b % = inv(A)*b
+
+% ANSWER:
+% h = 0.0040 0.0084 0.0197 0.0470 0.1123 0.4910 0.1123 0.0470 0.0197 0.0084 0.0040
+
+% ANSWER: The values of h found will be used to compute H(q). See the
+% continuation in the solution by hand.
+
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Simulate the signals REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+
+% Create real signal
+N = 500;
+n = 0:N-1;
+sigmaNoise = 1;
+f = 0.3;
+s = sin(f*n);                    % Interesting signal
+y = s + sigmaNoise*randn(1,N);   % Signal + noise
+
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Filter y using the optimal non-causal Wiener filter REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Anti-causal part
+%a_ac = [1 -3.37];
+%b_ac = [0.5 -3.37];
+%sHat_ac = filtfilt(b_ac, a_ac, y);
+
+% Causal part
+a_c = [1 -0.3];
+b_c = [0.5 0];
+sHat_c = filtfilt(b_c, a_c, y); 
+
+sHat = sHat_c;
+
+MSE_1 = sum((s - sHat).^2)/length(s) % MSE_1 = 0.2621
+
+% ANSWER: MSE for non-causal filter = 0.2621
+
+% Plot
+figure(1);
+plot(n, s); hold on; plot(n, sHat); 
+legend('s[n]','$\hat{s}_1$[n]','Interpreter','latex');
+xlabel('n');ylabel('Real signal and estimate');
+title("Non-causal Wiener filter");
+
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH- Filter y using the h(-5),...,h(5) REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+
+a = 1;
+a = h(6:11);
+% Just send the causal part to filtfilt
+sHat_2 = filtfilt(b,a,y);
+figure(2);
+plot(n, s); hold on; plot(n, sHat_2); 
+legend('s[n]','$\hat{s}_2$[n]','Interpreter','latex');
+xlabel('n');ylabel('Real signal and estimate');
+title("Second non-causal filter with 11 terms of h(q)");
+
+MSE_2 = sum((s - sHat_2).^2)/length(s) % 3.65e4 
+
+% ANSWER: MSE for second filter = 3.65e4, not reasonable
+
+
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Plot Rss REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+
+Rss = zeros(1,length(y));
+Rss(1) = 2.9804; % Rss_0
+Rss(2) = 1.6863; % Rss_1
+for k = 3:length(y)
+    Rss(k) = 0.7*Rss(k-1);
+end
+figure(3);
+plot(n,Rss);
+xlabel("n");ylabel("Rss");title("RSS");
+
+% ANSWER: I didn't have the time to plot the second filter so I can't
+% really explain why their performances are alike.
+
+
+
+
+
+##### SOURCE END #####
+--></body></html>

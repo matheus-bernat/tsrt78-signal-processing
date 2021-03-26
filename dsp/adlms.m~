@@ -1,0 +1,11 @@
+function th=adlms(y,na,nb,nk,mu)
+%LMS for adaptive parameter estimation
+N=length(y);
+th=zeros(na+nb,N);
+for t=max([na+1,nb+nk,2]):N
+    phiy=-z.y(t-1:-1:t-na,:); 
+    phiu=z.u(t-nk:-1:t-nk-nb+1,:);
+    phi=[phiy(:);phiu(:)];
+    th(t,:)=th(t-1,:)+mu*phi*(y(t)-phi'*th(t-1,:));
+end
+

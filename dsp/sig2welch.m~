@@ -1,0 +1,4 @@
+function [Phi,f]=sig2welch(x,varargin)
+
+[X,f]=batchdft(x,varargin{:});
+Phi=mean(X,2);

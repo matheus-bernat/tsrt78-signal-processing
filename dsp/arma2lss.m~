@@ -1,0 +1,10 @@
+function [b,a]=arma2lss(A,B,C,D)
+%ARMA to state space conversion
+a=real(poly(A));
+   if nu>0
+       for j=1:ny
+           for i=1:nu
+               b(j,:,i)=real(poly(A-B(:,i)*C(j,:))) + (D(j,i)-1)*a;
+           end
+       end
+   else
