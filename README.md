@@ -9,7 +9,7 @@ The purpose of the lab was to investigate signal modeling in practice by modelin
 - a complete sentence.  
 The major findings of the lab was that an AR(2)-model is good for modeling periodic signals, and that when modeling and simulating a signal, better results are achieved if the signal is divided into segments that each are modelled on their own and then composed into one simulation of the signal. The latter method is the one used in the speech encoding of Global System for Mobile Communication (GSM).
 
-Here is a link to the [report](lab1/).
+Here is a link to the [report](lab1/TSRT78_lab1_cassu286_matvi959_final.pdf).
 
 ## Lab 2. Noise canceling
 This lab was about designing an adaptive filter for noise canceling. In the lab, music is corrupted by a noise signal (white noise, sum of sine-waves and chirp). 
