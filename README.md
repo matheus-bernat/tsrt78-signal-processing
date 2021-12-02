@@ -1,11 +1,12 @@
 # TSRT78 Digital signal processing
 
 This repository is used for the labs of the course TSRT78 - Signal processing. In this course we learned:
-- signal modeling of deterministic and stochastic signals
-- parametric modeling with ARMA models
-- model estimation
-- optimal filtering with Wiener and Kalman filtering
+- signal modeling of deterministic and stochastic signals;
+- parametric modeling with ARMA models;
+- model estimation;
+- optimal filtering with Wiener and Kalman filtering;
 - adaptive filtering.
+
 Here is a link to the [course book](https://books.google.ch/books/about/Signal_Processing.html?id=UDlMygAACAAJ&source=kp_book_description&redir_esc=y), and to the [course page](https://liu.se/studieinfo/en/kurs/tsrt78/ht-2018).
 
 ## Lab 1. Speech encoding
